@@ -9,7 +9,7 @@ class App extends Component {
 
     constructor(props){
         super(props);
-        this.state = {time:'',number:'',members:[]};
+        this.state = {msg:'',columns:[],items:[]};
     }
 
     componentDidMount(){
@@ -17,13 +17,14 @@ class App extends Component {
         this.serverRequest = $.get({
                "url": this.props.source,
                 "dataType": "jsonp",
-                "jsonpCallback":"callback",
+                "jsonpCallback":"callbackfunc",
                "success": function (result) {
                     this.setState({
-                        time:result.time,
-                        number: result.info.total,
-                        members:result.info.members,
+                        msg:result.msg,
+                        columns:result.data.columns,
+                        items:result.data.items
                     })
+
                 }.bind(this)
             }
         );
@@ -33,23 +34,35 @@ class App extends Component {
         this.serverRequest.abort();
     }
 
-  render() {
-        var lis = this.state.members.map(function (m){
-            return <tr><td>{m.name}</td><td>{m.age}</td></tr>;
-        })
-    return (
-      <div className="App">
+    render(){
+      var ths = this.state.columns.map(function(m){
+        return <th>{m}</th>;
+      });
+      var items = this.state.items.map(function(m){
+        return <tr>
+          <td>{m.shopid}</td>
+          <td>{m.name}</td>
+          <td>{m.city}</td>
+          <td>{m.location}</td>
+        </tr>
+      })
+      return (
+         <div className="App">
         <header className="App-header">
           <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">欢迎来到爬虫系统和数据分析系统</h1>
+          <h1 className="App-title">我的爬虫系统和数据分析系统</h1>
         </header>
         <p className="App-intro">
-            {this.state.time}本系统一为爬虫框架，{this.state.number}二为机器学习。爬虫框架旨在调度爬虫的管理，和爬虫数据的监测。机器学习平台的目标是解决线上取特征及特征处理，反射调用模型，执行学习和预测并反馈到图表上。
+            本系统一为爬虫框架，二为机器学习。爬虫框架旨在调度爬虫的管理，和爬虫数据的监测。机器学习平台的目标是解决线上取特征及特征处理，反射调用模型，执行学习和预测并反馈到图表上。
         </p>
-          <table className="table">{lis}</table>
+        <em>{this.state.msg}</em>
+        <table class="table">
+          {ths}
+          {items}
+        </table>
       </div>
-    );
-  }
+      );
+    }
 }
 
 export default App;
